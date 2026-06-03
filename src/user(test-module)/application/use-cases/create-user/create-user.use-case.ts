@@ -20,6 +20,7 @@ export class CreateUserUseCase implements UseCase<void, void> {
       await this.outbox.createEvent({
         eventType: USER_CREATED,
         payload: { id: '123456', name: 'Maks' },
+        maxAttempts: 2,
         aggregate: {
           aggregateId: '123456',
           aggregateType: 'outbox_event', // here name user table
