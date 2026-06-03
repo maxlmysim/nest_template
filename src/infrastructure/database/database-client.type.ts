@@ -1,7 +1,4 @@
-import { Kysely, Transaction } from 'kysely';
+import { Kysely } from 'kysely';
 import { DB } from './generated/database.types';
 
-export type DatabaseClient = Kysely<DB>;
-export type TransactionClient = Transaction<DB>;
-
-export type DbClient = DatabaseClient | TransactionClient;
+export type DbClient = Kysely<DB>;

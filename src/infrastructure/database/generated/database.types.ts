@@ -24,10 +24,21 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface OutboxEvent {
+  aggregate_id: string | null;
+  aggregate_type: string | null;
+  attempts: Generated<number>;
+  completed_at: Timestamp | null;
   created_at: Generated<Timestamp>;
+  error_message: string | null;
   event_type: string;
   id: Generated<string>;
+  idempotency_key: string | null;
+  last_error_at: Timestamp | null;
+  locked_at: Timestamp | null;
+  max_attempts: Generated<number>;
+  next_retry_at: Timestamp | null;
   payload: Json;
+  processing_started_at: Timestamp | null;
   status: Generated<string>;
   updated_at: Generated<Timestamp>;
 }

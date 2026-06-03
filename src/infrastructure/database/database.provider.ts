@@ -3,12 +3,12 @@ import { KYSELY_DB } from './database.tokens';
 import { ConfigService } from '@nestjs/config';
 import { Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
-import type { DatabaseClient } from './database-client.type';
+import type { DbClient } from './database-client.type';
 import type { DB } from './generated/database.types';
 
 export const DatabaseProvider: Provider = {
   provide: KYSELY_DB,
-  useFactory: (configService: ConfigService): DatabaseClient => {
+  useFactory: (configService: ConfigService): DbClient => {
     const pool = new Pool({
       host: configService.getOrThrow<string>('DB_HOST'),
       port: Number(configService.getOrThrow<string>('DB_PORT')),
@@ -27,5 +27,5 @@ export const DatabaseProvider: Provider = {
       }),
     });
   },
-  inject: [KYSELY_DB],
+  inject: [ConfigService],
 };
