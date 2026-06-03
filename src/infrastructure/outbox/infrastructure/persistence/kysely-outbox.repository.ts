@@ -34,12 +34,7 @@ export class KyselyOutboxRepository implements OutboxRepository {
           .where((eb) =>
             eb.or([
               eb('status', '=', OUTBOX_EVENT_STATUS.PENDING),
-              eb.and([
-                eb('status', '=', OUTBOX_EVENT_STATUS.FAILED),
-
-                eb('attempts', '<', eb.ref('max_attempts')),
-                eb('next_retry_at', '<', sql<Date>`now()`),
-              ]),
+              eb.and([eb('status', '=', OUTBOX_EVENT_STATUS.FAILED), eb('next_retry_at', '<', sql<Date>`now()`)]),
               eb.and([
                 eb('status', '=', OUTBOX_EVENT_STATUS.PROCESSING),
                 eb('processing_started_at', '<', sql<Date>`now() - interval '10 minutes'`),
@@ -76,10 +71,6 @@ export class KyselyOutboxRepository implements OutboxRepository {
       .updateTable('outbox_event')
       .set((eb) => ({
         last_error_at: new Date(),
-        status: sql`CASE 
-                        WHEN attemps < max_attempts 
-                        THEN ${OUTBOX_EVENT_STATUS.FAILED} ELSE ${OUTBOX_EVENT_STATUS.DEAD} 
-                    END`,
         attempts: eb('attempts', '+', 1),
         ...OutboxEventMapper.toUpdateRowFailed(input),
       }))

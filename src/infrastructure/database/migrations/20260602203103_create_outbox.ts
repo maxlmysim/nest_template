@@ -15,7 +15,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('last_error_at', 'timestamptz')
       .addColumn('error_message', 'text')
       .addColumn('attempts', 'integer', (col) => col.notNull().defaultTo(0))
-      .addColumn('max_attempts', 'integer', (col) => col.notNull().defaultTo(3))
       .addColumn('next_retry_at', 'timestamptz'),
   );
 
@@ -31,11 +30,6 @@ export async function up(db: Kysely<any>): Promise<void> {
         CHECK ( jsonb_typeof(payload) = 'object' )`.execute(db);
 
   await sql`
-    ALTER TABLE outbox_event
-      ADD CONSTRAINT outbox_event_attempts_check
-        CHECK ( attempts >=0 AND max_attempts >0 )`.execute(db);
-
-  await sql`
     CREATE INDEX idx_outbox_event_pending_created_at
      ON outbox_event( created_at)
      WHERE status = 'PENDING'`.execute(db);
@@ -43,7 +37,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`
   CREATE INDEX idx_outbox_event_failed_with_retry
   ON outbox_event(next_retry_at,created_at)
-   WHERE status='FAILED' AND attempts < max_attempts
+   WHERE status='FAILED' 
   `.execute(db);
 }
 

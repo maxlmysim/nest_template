@@ -34,7 +34,6 @@ export type CreateOutboxEventInput<T extends OutboxEventName = OutboxEventName> 
   'id' | 'attempts'
 > & {
   aggregate?: AggregateRef;
-  maxAttempts?: number;
 };
 
 export type MarkOutboxEventAsFailedInput = {

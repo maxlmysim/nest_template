@@ -8,7 +8,6 @@ import type {
   OutboxEventPayloadMap,
 } from '../../outbox.types';
 import { OUTBOX_EVENT_STATUS } from '../../domain/outbox-status.enum';
-import { MAX_ATTEMPTS } from '../../outbox.constants';
 
 type OutboxEventRow = Selectable<DB['outbox_event']>;
 type OutboxEventInsertRow = Insertable<DB['outbox_event']>;
@@ -34,7 +33,6 @@ export class OutboxEventMapper {
       payload: input.payload,
       event_type: input.eventType,
       idempotency_key: input.idempotencyKey,
-      max_attempts: input.maxAttempts ?? MAX_ATTEMPTS,
       ...(input.aggregate
         ? {
             aggregate_type: input.aggregate.aggregateType,
@@ -48,7 +46,7 @@ export class OutboxEventMapper {
     return {
       error_message: input.errorMessage,
       next_retry_at: input.nextRetryAt,
-      ...(input.isDead ? { status: OUTBOX_EVENT_STATUS.DEAD } : {}),
+      status: input.isDead ? OUTBOX_EVENT_STATUS.DEAD : OUTBOX_EVENT_STATUS.FAILED,
     };
   }
 }

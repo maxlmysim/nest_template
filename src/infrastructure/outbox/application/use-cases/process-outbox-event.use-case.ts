@@ -40,14 +40,17 @@ export class ProcessOutboxEventUseCase implements UseCase<void, void> {
 
       await this.outboxRepository.markAsCompleted(event.id);
     } catch (err) {
-      this.logger.error(`Handler "${event.eventType}" failed`, err);
+      this.logger.error(`Handler "${event.eventType}" failed (event ${event.id})`, err);
 
       await this.scheduleRetryOrDead(event, err instanceof Error ? err.message : String(err));
     }
   }
 
   private async scheduleRetryOrDead(event: OutboxEvent, errorMessage: string) {
-    const { nextRetryAt, isDead } = this.retryPolicyService.decide({ attempts: event.attempts });
+    const { nextRetryAt, isDead } = this.retryPolicyService.decide({
+      attempts: event.attempts,
+      eventType: event.eventType,
+    });
 
     await this.outboxRepository.markAsFailed(event.id, {
       errorMessage,
