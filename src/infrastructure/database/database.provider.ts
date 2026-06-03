@@ -1,5 +1,5 @@
 import { Provider } from '@nestjs/common';
-import { KYSELY_DB } from './database.tokens';
+import { InjectKyselyDb } from './database.tokens';
 import { ConfigService } from '@nestjs/config';
 import { Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
@@ -7,7 +7,7 @@ import type { DbClient } from './database-client.type';
 import type { DB } from './generated/database.types';
 
 export const DatabaseProvider: Provider = {
-  provide: KYSELY_DB,
+  provide: InjectKyselyDb,
   useFactory: (configService: ConfigService): DbClient => {
     const pool = new Pool({
       host: configService.getOrThrow<string>('DB_HOST'),

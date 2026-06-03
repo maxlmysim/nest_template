@@ -1,5 +1,3 @@
-export interface ITransactionManager {
+export interface TransactionManager {
   run<T>(callback: () => Promise<T>): Promise<T>;
 }
-
-export const InjectTransactionManager = Symbol('InjectTransactionManager');

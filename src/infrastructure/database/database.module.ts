@@ -5,16 +5,15 @@ import {
   OnModuleDestroy,
   type Provider,
 } from '@nestjs/common';
-import { KYSELY_DB } from './database.tokens';
+import { InjectTransactionalManager, InjectKyselyDb } from './database.tokens';
 import { DatabaseProvider } from './database.provider';
 import type { DbClient } from './database-client.type';
-import { InjectTransactionManager } from './transaction/transaction-manager.interface';
 import { KyselyTransactionManager } from './transaction/kysely-transaction-manager';
 import { TransactionContextService } from './transaction/transaction-context.service';
 import { DbContextService } from './transaction/db-context.service';
 
 const transactionProvider: Provider = {
-  provide: InjectTransactionManager,
+  provide: InjectTransactionalManager,
   useClass: KyselyTransactionManager,
 };
 
@@ -26,10 +25,10 @@ const transactionProvider: Provider = {
     TransactionContextService,
     DbContextService,
   ],
-  exports: [KYSELY_DB, InjectTransactionManager, TransactionContextService],
+  exports: [InjectTransactionalManager, DbContextService],
 })
 export class DatabaseModule implements OnModuleDestroy {
-  constructor(@Inject(KYSELY_DB) private readonly db: DbClient) {}
+  constructor(@Inject(InjectKyselyDb) private readonly db: DbClient) {}
 
   async onModuleDestroy() {
     await this.db.destroy();

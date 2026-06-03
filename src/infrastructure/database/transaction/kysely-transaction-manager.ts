@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ITransactionManager } from './transaction-manager.interface';
+import type { TransactionManager } from './transaction-manager.interface';
 import { TransactionContextService } from './transaction-context.service';
 import type { DbClient } from '../database-client.type';
-import { KYSELY_DB } from '../database.tokens';
+import { InjectKyselyDb } from '../database.tokens';
 
 @Injectable()
-export class KyselyTransactionManager implements ITransactionManager {
+export class KyselyTransactionManager implements TransactionManager {
   constructor(
     private readonly transactionContext: TransactionContextService<DbClient>,
-    @Inject(KYSELY_DB) private readonly db: DbClient,
+    @Inject(InjectKyselyDb) private readonly db: DbClient,
   ) {}
 
   async run<T>(callback: () => Promise<T>): Promise<T> {
