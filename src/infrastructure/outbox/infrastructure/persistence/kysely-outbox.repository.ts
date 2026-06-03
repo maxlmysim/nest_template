@@ -23,11 +23,10 @@ export class KyselyOutboxRepository implements OutboxRepository {
     const pendingEvents = await this.dbContext
       .executor()
       .updateTable('outbox_event')
-      .set((eb) => ({
+      .set({
         status: OUTBOX_EVENT_STATUS.PROCESSING,
         processing_started_at: new Date(),
-        attempts: eb('attempts', '+', 1),
-      }))
+      })
       .where('id', 'in', (eb) =>
         eb
           .selectFrom('outbox_event')
@@ -75,14 +74,15 @@ export class KyselyOutboxRepository implements OutboxRepository {
     await this.dbContext
       .executor()
       .updateTable('outbox_event')
-      .set({
+      .set((eb) => ({
         last_error_at: new Date(),
         status: sql`CASE 
                         WHEN attemps < max_attempts 
                         THEN ${OUTBOX_EVENT_STATUS.FAILED} ELSE ${OUTBOX_EVENT_STATUS.DEAD} 
                     END`,
+        attempts: eb('attempts', '+', 1),
         ...OutboxEventMapper.toUpdateRowFailed(input),
-      })
+      }))
       .where('id', '=', id)
       .execute();
   }
