@@ -9,9 +9,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('idempotency_key', 'text', (col) => col.unique())
       .addColumn('event_type', 'text', (col) => col.notNull())
       .addColumn('payload', 'jsonb', (col) => col.notNull())
-      .addColumn('status', 'varchar(50)', (col) =>
-        col.notNull().defaultTo('PENDING'),
-      )
+      .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('PENDING'))
       .addColumn('processing_started_at', 'timestamptz')
       .addColumn('completed_at', 'timestamptz')
       .addColumn('last_error_at', 'timestamptz')
