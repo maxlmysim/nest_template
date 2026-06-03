@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { USER_CREATED } from '../../../user(test-module)/domain/events/user-created.outbox-event';
-import type { OutboxEventName } from '../outbox.types';
 
 export const OUTBOX_RETRY_DELAYS_MS = [
   10_000,
@@ -28,16 +26,8 @@ type RetryDecision =
 
 @Injectable()
 export class OutboxRetryPolicyService {
-  private defaultMaxAttempts = 5;
-  private readonly maxAttemptsByEvent: Partial<Record<OutboxEventName, number>> = {
-    [USER_CREATED]: 2,
-    // [PAYMENT_SYNCED]: 20,
-  };
-
-  decide(input: { eventType: OutboxEventName; attempts: number }): RetryDecision {
-    const { attempts, eventType } = input;
-
-    const maxAttempts = this.maxAttemptsByEvent[eventType] ?? this.defaultMaxAttempts;
+  decide(input: { maxAttempts: number; attempts: number }): RetryDecision {
+    const { attempts, maxAttempts } = input;
 
     const attemptsMade = attempts + 1;
 

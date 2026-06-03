@@ -16,9 +16,8 @@ export type OutboxEventByName<T extends OutboxEventName> = {
   id: string;
   eventType: T;
   payload: OutboxEventPayloadMap[T];
-  // aggregate?: AggregateRef;
-  idempotencyKey?: string;
   attempts: number;
+  maxAttempts: number;
 };
 
 export type OutboxEvent<T extends OutboxEventName = OutboxEventName> = T extends OutboxEventName
@@ -29,11 +28,13 @@ export type ClaimPendingOutboxEventsInput = {
   limit: number;
 };
 
-export type CreateOutboxEventInput<T extends OutboxEventName = OutboxEventName> = Omit<
+export type CreateOutboxEventInput<T extends OutboxEventName = OutboxEventName> = Pick<
   OutboxEvent<T>,
-  'id' | 'attempts'
+  'eventType' | 'payload'
 > & {
   aggregate?: AggregateRef;
+  maxAttempts?: number;
+  idempotencyKey?: string;
 };
 
 export type MarkOutboxEventAsFailedInput = {

@@ -49,7 +49,7 @@ export class ProcessOutboxEventUseCase implements UseCase<void, void> {
   private async scheduleRetryOrDead(event: OutboxEvent, errorMessage: string) {
     const { nextRetryAt, isDead } = this.retryPolicyService.decide({
       attempts: event.attempts,
-      eventType: event.eventType,
+      maxAttempts: event.maxAttempts,
     });
 
     await this.outboxRepository.markAsFailed(event.id, {

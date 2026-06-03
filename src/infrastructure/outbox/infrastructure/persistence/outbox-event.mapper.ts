@@ -19,8 +19,8 @@ export class OutboxEventMapper {
       id: row.id,
       eventType: row.event_type as OutboxEventName,
       payload: row.payload as OutboxEventPayloadMap[OutboxEventName],
-      idempotencyKey: row.idempotency_key ?? undefined,
       attempts: row.attempts ?? 0,
+      maxAttempts: row.max_attempts,
     };
   }
 
@@ -33,6 +33,7 @@ export class OutboxEventMapper {
       payload: input.payload,
       event_type: input.eventType,
       idempotency_key: input.idempotencyKey,
+      max_attempts: input.maxAttempts,
       ...(input.aggregate
         ? {
             aggregate_type: input.aggregate.aggregateType,
