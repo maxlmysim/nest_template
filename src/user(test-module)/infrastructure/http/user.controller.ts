@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get,  } from '@nestjs/common';
 import { CreateUserUseCase } from '../../application/use-cases/create-user/create-user.use-case';
 
 @Controller('user')
@@ -11,4 +11,5 @@ export class UserController {
 
     return new Date().toISOString();
   }
+
 }
